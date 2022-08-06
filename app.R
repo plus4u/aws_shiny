@@ -1,58 +1,77 @@
-library(shiny)
+### aws_shiny_1.R
 
-# Define UI for app that draws a histogram ----
-ui <- fluidPage(
-    
-    # App title ----
-    titlePanel("Hello Shiny!"),
-    
-    # Sidebar layout with input and output definitions ----
-    sidebarLayout(
-        
-        # Sidebar panel for inputs ----
-        sidebarPanel(
-            
-            # Input: Slider for the number of bins ----
-            sliderInput(inputId = "bins",
-                        label = "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-            
-        ),
-        
-        # Main panel for displaying outputs ----
-        mainPanel(
-            
-            # Output: Histogram ----
-            plotOutput(outputId = "distPlot")
-            
-        )
-    )
+library(shiny)
+library(shinythemes) 
+library(shinydashboard) 
+
+library( readxl)  
+library(dplyr) # dashboard %>% 
+library(ggplot2) # dashboard function ggplot
+
+library(ggvis) # bind_shiny
+library(shinyjs) # for image-datatable click
+
+ui <- navbarPage("Data Analytics",  collapsible = TRUE, inverse = TRUE, theme = shinytheme("spacelab"), 
+                 
+                 Tab_Sales, 
+                 navbarMenu("BSC",
+                            tabPanel("Dashboard", 
+                                     dashboardPage(ds_header, ds_sidebar, ds_body, skin='red')     ), 
+                            "--- e2e Process---", 
+                            
+                            tabPanel("Order 2 Cash",   ),
+                            tabPanel("Order 2 Delivery",   ),
+                            tabPanel("Purchase 2 Pay",   ),
+                            tabPanel("Plan 2 Forecast",   ),
+                            tabPanel("Actual 2 Cost",   )  ),
+                 Tab_Statistics,
+                 Tab_ML, 
 )
 
-# Define server logic required to draw a histogram ----
-server <- function(input, output) {
+
+### server ################ 
+
+server <- function(input, output, session) {
     
-    # Histogram of the Old Faithful Geyser Data ----
-    # with requested number of bins
-    # This expression that generates a histogram is wrapped in a call
-    # to renderPlot to indicate that:
-    #
-    # 1. It is "reactive" and therefore should be automatically
-    #    re-executed when inputs (input$bins) change
-    # 2. Its output type is a plot
-    output$distPlot <- renderPlot({
-        
-        x    <- faithful$waiting
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-        
-        hist(x, breaks = bins, col = "#75AADB", border = "white",
-             xlab = "Waiting time to next eruption (in mins)",
-             main = "Histogram of waiting times")
-        
-    })
+    # ERP      # sales    
+    pack_UC_sv("Demand_F", the_data)  
+    pack_UC_sv_3("Demand_SI_DL", the_data)   
+    pack_UC_sv("ERP_ANOVA_o", the_data)  
+    pack_UC_sv("ERP_ANOVA_t", the_data)  
+    
+    pack_UC_sv("CronBA", the_data)  
+    pack_UC_sv("BCG_GE", the_data)
+    pack_UC_sv("Cost_Model", the_data) 
+    pack_UC_sv("BOM_Price", the_data) 
+    pack_UC_sv("Chi_Sq", the_data) 
+    
+    pack_UC_sv("P&L CF", the_data)  
+    
+    source("sc_ERP_Sales_sv.R",local = TRUE)  
+    source("sc_stat_sv_xls_2.R",local = TRUE) 
+    source(file="dashboard_sv.R", local=T) 
+    
+    pack_UC_sv("xor", the_data)  
+    pack_UC_sv("Lin_R", the_data)   
+    pack_UC_sv("Cla_rg", the_data) 
+    pack_UC_sv("Log_rg", the_data)  
+    pack_UC_sv("CNN", the_data)   
+    pack_UC_sv("RNN", the_data) 
+    
+    pack_UC_sv("YoLo", the_data)  
+    pack_UC_sv("Numpy", the_data)   
+    pack_UC_sv("Pandas", the_data) 
+    pack_UC_sv("Matplot", the_data)  
+    pack_UC_sv("Tensorf", the_data)   
+    pack_UC_sv("PyTorch", the_data) 
+    pack_UC_sv("SciPy", the_data)  
+    
+    pack_UC_sv("Anacoda", the_data)   
+    pack_UC_sv("Colab", the_data) 
+    pack_UC_sv("Jupyter", the_data) 
     
 }
 
-shinyApp(ui, server)
+######################################
+shinyApp(ui, server) 
+
